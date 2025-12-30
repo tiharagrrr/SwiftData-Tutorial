@@ -30,12 +30,16 @@ struct DestinationListingView: View {
         }
     }
     
-    init(sort: SortDescriptor<Destination>) {
+    init(sort: SortDescriptor<Destination>, searchString: String) {
         //_destinations accesses the property wrapper, destinations refers to the array
         _destinations = Query(filter: #Predicate{
-            //$0 is a shorthand to say first param (in this case there is only 1 param anyway
-            // alternative would be like destination.priority
-            $0.priority >= 2
+            if searchString.isEmpty {
+                return true
+            } else {
+                //$0 is a shorthand of accessing the first param (in this case there is only one param anyway
+                //localizedStandardContains is case,diacritic insensitive locale aware search, probably the best way to compare
+                return $0.name.localizedStandardContains(searchString)
+            }
         },sort: [sort])
     }
     
@@ -49,5 +53,5 @@ struct DestinationListingView: View {
 }
 
 #Preview {
-    DestinationListingView(sort: SortDescriptor(\Destination.name))
+    DestinationListingView(sort: SortDescriptor(\Destination.name), searchString: "")
 }
